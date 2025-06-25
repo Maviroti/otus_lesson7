@@ -4,80 +4,8 @@ import json
 import os
 import sys
 
-from helpers import clear_console, print_dict, menu_pause, dump_data, yes_no
+from helpers import clear_console, get_data, get_json_format, get_max_id, print_about_prog, print_dict, menu_pause, dump_data, sorted_id, yes_no
 from config import PATH
-
-
-def get_data() -> dict:
-    """
-    Функция возвращает содержание книги контактов
-
-    Returns:
-        data(dict): Содержание json файла с контактами
-    """
-    with open (PATH, 'r') as f:
-        try:
-            data = json.load(f)
-            return data
-        except json.JSONDecodeError as e:
-            print(f"Структура файла повреждена! Исправьте ошибки вручную или запустите очистку контактов.")
-        except Exception as e:
-            print(f'Операция прервана из-за непредвиденной ошибки!')
-
-def get_max_id() -> int:
-    """
-    Функция возвращает самый большой ID
-
-    Returns:
-        max_id(int): Последний id из книги
-    """
-    data = get_data()
-    if data is None:
-        menu_pause()
-        return
-    id_list = list(data.keys())
-    if not id_list:
-        return 0
-    try:
-        max_id = max(map(int, id_list))
-    except ValueError as e:
-        print(f'В книге записан некорректный ID [{str(e).split()[-1]}]. Исправьте ошибку вручную или запустите очистку контактов.')
-        menu_pause()
-        return
-
-    return max_id
-
-def get_json_format(name: str, phone: str, comm: str) -> dict:
-    """
-    Функция возвращает подготовленный для записи в json cловарь
-
-    Args
-        name(str): Имя контакта
-        phone(str): Телефонный номер
-        comm(str): Комментарий
-
-    Returns:
-        data(dict): Подготовленный для записи в json словарь
-    """
-    data = {"name": name, "phone": phone, "comment": comm}
-    return data
-
-def sorted_id():
-    """
-    Функция присваивает всем контактам порядковый id
-    """
-    yes = yes_no('Будет выполнено переприсвоение ID, возможна смена ID у некоторых контактов.')
-    if yes:
-        data =get_data()
-        if data is None:
-            menu_pause()
-            return
-        new_data = {}
-        for enum, key in enumerate(data):
-            new_data[str(enum + 1)] = data[key]
-        dump_data(new_data)
-
-
 
 # === [Просмотр] ===
 def view_contact():
@@ -270,8 +198,7 @@ def add_phone():
         menu_pause()
         return
     merge_data = {**data, str(new_id): new_data}
-    with open (PATH, 'w') as f:
-        json.dump(merge_data, f,  indent=4)
+    dump_data(merge_data)
 
 
 # === [Удаление] ===
@@ -313,12 +240,6 @@ def clean_book() -> None:
     yes = yes_no('Книга контактов будет полностью удалена!')
     if yes:
         dump_data({})
-        
-
-
-
-
-
 
 
 def menu():
@@ -331,6 +252,7 @@ def menu():
         print('5. Удаление контактов')
         print('6. Очистка контактов')
         print('7. Пересчёт ID контактов')
+        print('8. О программе')
         print('0. Выход')
 
         selection = input("Введите номер пункта: ")
@@ -354,6 +276,8 @@ def menu():
         elif selection == '7':
             sorted_id()
             print()
+        elif selection == '8':
+            print_about_prog()
         elif selection == '0':
             print('Остановка программы')
             sys.exit(0)
@@ -364,6 +288,4 @@ def main():
     menu()
 
 if __name__ == "__main__":
-    # del_phone_by_name()
-    # sys.exit(1)
     main()
