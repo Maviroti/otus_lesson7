@@ -45,6 +45,7 @@ def yes_no(text:str) -> bool:
         return False
     elif continue_tag != 'y' and continue_tag != 'Y':
         print("Некорректный ввод!\nВы будете возвращены в меню")
+        menu_pause()
         return False
     return True
 

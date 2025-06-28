@@ -217,19 +217,19 @@ def del_menu():
         return
     
     dell_phone_id_str = input("Введите ID (если несколько, то через пробел): ")
-    del_phone_id_list = dell_phone_id_str.split()
+    del_phone_id_set = set(dell_phone_id_str.split())
     data = get_data()
     if data is None:
         menu_pause()
         return
 
-    for phone_id in del_phone_id_list:
+    for phone_id in del_phone_id_set:
         if phone_id not in data:
             print(f'Контакта с таким ID ["{phone_id}"] не существует!')
             menu_pause()
             return
         
-    for phone_id in del_phone_id_list:
+    for phone_id in del_phone_id_set:
         del data[phone_id]
 
     dump_data(data)
@@ -283,6 +283,7 @@ def menu():
             sys.exit(0)
         else:
             print("Некорректный ввод!\n")
+            menu_pause()
 
 def main():
     menu()
